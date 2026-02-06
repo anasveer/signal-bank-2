@@ -72,7 +72,7 @@ export default function Navbar() {
           {/* Right CTA + Mobile toggle */}
           <div className="flex items-center gap-2">
             <a
-              href="#join"
+              href="https://t.me/+qTBeOiPtYEkyOTBi"
               className="
                 hidden lg:inline-flex
                 items-center justify-center
