@@ -10,6 +10,8 @@ const navLinks = [
   { label: "Who is Leannard?", href: "#leannard" },
 ];
 
+const TELEGRAM_LINK = "https://t.me/+qTBeOiPtYEkyOTBi";
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
@@ -43,7 +45,6 @@ export default function Navbar() {
             className="flex items-center gap-2 font-semibold tracking-wide text-white"
           >
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15">
-              {/* simple logo mark */}
               <span className="text-sm">S</span>
             </span>
             <span className="text-sm lg:text-base">
@@ -71,8 +72,11 @@ export default function Navbar() {
 
           {/* Right CTA + Mobile toggle */}
           <div className="flex items-center gap-2">
+            {/* DESKTOP CTA */}
             <a
-              href="https://t.me/+qTBeOiPtYEkyOTBi"
+              href={TELEGRAM_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
               className="
                 hidden lg:inline-flex
                 items-center justify-center
@@ -87,7 +91,7 @@ export default function Navbar() {
               Join the free group
             </a>
 
-            {/* Mobile button */}
+            {/* Mobile toggle */}
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
@@ -100,7 +104,6 @@ export default function Navbar() {
               aria-label="Toggle menu"
               aria-expanded={open}
             >
-              {/* hamburger / close */}
               <span className="relative block h-4 w-5">
                 <span
                   className={`absolute left-0 top-0 h-0.5 w-5 bg-current transition ${
@@ -149,8 +152,11 @@ export default function Navbar() {
               </div>
             </div>
 
+            {/* MOBILE CTA */}
             <a
-              href="#join"
+              href={TELEGRAM_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setOpen(false)}
               className="
                 mt-3 inline-flex w-full
