@@ -87,7 +87,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="w-full bg-white mt-25">
+    <section className="w-full bg-white mt-35 md:mt-25">
       {/* Top Trust Bar */}
       <div className="w-full bg-white">
         <div className="mx-auto max-w-6xl px-4 py-3">

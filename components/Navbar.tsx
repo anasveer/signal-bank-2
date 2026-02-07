@@ -38,6 +38,7 @@ export default function Navbar() {
           backdrop-blur-xl
         "
       >
+        {/* Top Row: Logo + Desktop links + Toggle */}
         <div className="flex items-center justify-between gap-3 px-4 py-3 lg:px-6">
           {/* Brand */}
           <Link
@@ -72,7 +73,7 @@ export default function Navbar() {
 
           {/* Right CTA + Mobile toggle */}
           <div className="flex items-center gap-2">
-            {/* DESKTOP CTA */}
+            {/* DESKTOP CTA (unchanged) */}
             <a
               href={TELEGRAM_LINK}
               target="_blank"
@@ -125,6 +126,27 @@ export default function Navbar() {
           </div>
         </div>
 
+        {/* ✅ Mobile CTA line under header row (center + wide) */}
+        <div className="px-4 pb-3 lg:hidden">
+          <a
+            href={TELEGRAM_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="
+              inline-flex w-full
+              items-center justify-center
+              rounded-full px-5 py-2
+              text-sm font-semibold text-white
+              bg-gradient-to-r from-emerald-400 to-emerald-600
+              hover:brightness-110 transition
+              shadow-[0_10px_25px_rgba(16,185,129,0.25)]
+              ring-1 ring-white/10
+            "
+          >
+            Join the free group
+          </a>
+        </div>
+
         {/* Mobile dropdown */}
         <div
           className={`lg:hidden overflow-hidden transition-[max-height,opacity] duration-300 ${
@@ -152,7 +174,7 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* MOBILE CTA */}
+            {/* MOBILE CTA (menu ke andar bhi rahega) */}
             <a
               href={TELEGRAM_LINK}
               target="_blank"

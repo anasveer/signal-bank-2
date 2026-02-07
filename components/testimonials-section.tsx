@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { GridPattern } from "@/components/ui/grid-pattern";
-import { Star } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
 type Review = {
   stars: 4 | 5;
@@ -20,7 +20,7 @@ const reviews: Review[] = [
     text:
       "Just insane how accurate they can be. Both Fred and YVM. I had blown my account a few times for greediness and in moments i didn't follow the right signals but i can say that...",
     name: "Rafael Belo.",
-    date: " 13 hours ago",
+    date: "13 hours ago",
   },
   {
     stars: 5,
@@ -49,8 +49,7 @@ const reviews: Review[] = [
   {
     stars: 4,
     title: "I stay in Cyprus how can I start I.",
-    text:
-      "I stay in Cyprus how can I start I don't have...",
+    text: "I stay in Cyprus how can I start I don't have...",
     name: "Sanie Mansaray.",
     date: "January 3",
   },
@@ -62,7 +61,7 @@ const reviews: Review[] = [
     name: "Lechuti Lehlohonolo.",
     date: "3 days ago",
   },
-   {
+  {
     stars: 5,
     title: "Great training and signals",
     text:
@@ -70,34 +69,11 @@ const reviews: Review[] = [
     name: "Jessica.",
     date: "January 8",
   },
-   {
-    stars: 5,
-    title: "I love this community",
-    text:
-      "This is just here to ensure the column is long enough to trigger the scrollbar functionality you requested...",
-    name: "Another User.",
-    date: "December 22",
-  },
-  {
-    stars: 5,
-    title: "more losses than wins",
-    text:
-      "How are there no negative reviews. ive set these up on a copier so enter each trade go to breakeven as soon as tp1 hits. they send 5 trades a day some win but majority lose. ive been at a loss everyday...",
-    name: "Paul Darnbrook.",
-    date: "Jun 11, 2025",
-  },
-   {
-    stars: 5,
-    title: "They are quite knowledgable and help me",
-    text:
-      "They are quite knowledgable and help me understand what is being done with the trades...",
-    name: "B Repi.",
-    date: "Sep 17, 2024",
-  },
-];;
+];
 
 const REVIEW_LINK = "https://www.trustpilot.com/review/signals2trade.com";
 
+/* ⭐ Stars */
 function StarsRow({ value }: { value: number }) {
   return (
     <div className="flex items-center gap-1">
@@ -106,17 +82,13 @@ function StarsRow({ value }: { value: number }) {
         return (
           <span
             key={i}
-            className={[
-              "inline-flex items-center justify-center",
-              "h-6 w-6 rounded-[2px]",
-              filled ? "bg-emerald-500" : "bg-emerald-500/20",
-            ].join(" ")}
-            aria-hidden="true"
+            className={`h-6 w-6 rounded-[2px] flex items-center justify-center ${
+              filled ? "bg-emerald-500" : "bg-emerald-500/20"
+            }`}
           >
             <Star
               className={filled ? "h-4 w-4 text-white" : "h-4 w-4 text-emerald-500"}
               fill={filled ? "currentColor" : "none"}
-              strokeWidth={2}
             />
           </span>
         );
@@ -126,107 +98,157 @@ function StarsRow({ value }: { value: number }) {
 }
 
 export function TestimonialsSection() {
-  const [filter, setFilter] = useState<"4-5" | "5">("4-5");
+  const [perView, setPerView] = useState(1);
+  const [index, setIndex] = useState(0);
 
-  const filtered = useMemo(() => {
-    if (filter === "5") return reviews.filter((r) => r.stars === 5);
-    return reviews.filter((r) => r.stars >= 4);
-  }, [filter]);
+  // responsive cards count
+  useEffect(() => {
+    const handleResize = () => {
+      setPerView(window.innerWidth >= 1024 ? 3 : 1);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const maxIndex = Math.max(0, reviews.length - perView);
+
+  const next = () => setIndex((i) => Math.min(i + 1, maxIndex));
+  const prev = () => setIndex((i) => Math.max(i - 1, 0));
+
+  const translate = perView === 3 ? index * 33.333 : index * 100;
 
   return (
     <section className="relative w-full bg-white py-12">
-      {/* subtle background */}
+      {/* background */}
       <div aria-hidden className="absolute inset-0">
-        <div className="absolute inset-0 opacity-40">
-          <GridPattern
-            width={28}
-            height={28}
-            x={0}
-            y={0}
-            strokeDasharray="3"
-            className="stroke-gray-300/40"
-          />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/60 to-white" />
+        <GridPattern
+          width={28}
+          height={28}
+          strokeDasharray="3"
+          className="stroke-gray-300/40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/70 to-white" />
       </div>
 
       <div className="relative mx-auto max-w-6xl px-4">
         {/* Header */}
         <div className="text-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="flex items-center gap-4">
-              <h2 className="text-4xl font-extrabold tracking-tight text-gray-900">
-                Excellent
-              </h2>
-
-              <StarsRow value={4} />
-              
-            </div>
-
-            <p className="text-sm text-gray-700">
-              Rated <span className="font-semibold">4.4</span> / 5 based on{" "}
-              <a href="#" className="font-semibold underline underline-offset-2">
-                2,493 reviews
-              </a>{" "}
-              on{" "}
-              <a href="#" className="font-semibold text-emerald-600 underline underline-offset-2">
-                ★ Trustpilot
-              </a>
-            </p>
+          <div className="flex justify-center items-center gap-4">
+            <h2 className="text-4xl font-extrabold text-gray-900">
+              Excellent
+            </h2>
+            <StarsRow value={4} />
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-            <button
-              onClick={() => setFilter("4-5")}
-              className={[
-                "rounded-full border px-4 py-2 text-sm font-semibold transition",
-                filter === "4-5"
-                  ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                  : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
-              ].join(" ")}
+          <p className="mt-2 text-sm text-gray-700">
+            Rated <span className="font-semibold">4.4</span> / 5 on{" "}
+            <a
+              href={REVIEW_LINK}
+              className="font-semibold text-emerald-600 underline"
             >
-              Showing our 4 & 5 star reviews
-            </button>
-
-          </div>
+              Trustpilot
+            </a>
+          </p>
         </div>
 
-        {/* Grid */}
-        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {filtered.map((r, idx) => (
-           <motion.article
-  key={idx}
-  initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
-  whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.5, delay: 0.05 * idx }}
-  className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
->
-  <StarsRow value={r.stars} />
+        {/* ===== Carousel ===== */}
+        <div className="relative mt-12">
+          {/* Arrows */}
+          <div className="pointer-events-none absolute inset-y-0 -left-6 -right-6 flex items-center justify-between lg:-left-14 lg:-right-14 z-20">
+            <button
+              onClick={prev}
+              disabled={index === 0}
+              className={`pointer-events-auto h-10 w-10 lg:h-16 lg:w-16 rounded-full 
+                bg-white/95 backdrop-blur border border-gray-300 shadow-lg 
+                flex items-center justify-center transition
+                ${
+                  index === 0
+                    ? "opacity-40 cursor-not-allowed"
+                    : "hover:scale-110 hover:bg-gray-50"
+                }`}
+              aria-label="Previous review"
+            >
+              <ChevronLeft className="h-5 w-5 lg:h-6 lg:w-6 text-gray-800" />
+            </button>
 
-  {/* Name + Date */}
-  <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
-    <span className="font-semibold text-gray-700">{r.name}</span>
-    <span>{r.date}</span>
-  </div>
+            <button
+              onClick={next}
+              disabled={index === maxIndex}
+              className={`pointer-events-auto h-10 w-10 lg:h-16 lg:w-16 rounded-full 
+                bg-white/95 backdrop-blur border border-gray-300 shadow-lg 
+                flex items-center justify-center transition
+                ${
+                  index === maxIndex
+                    ? "opacity-40 cursor-not-allowed"
+                    : "hover:scale-110 hover:bg-gray-50"
+                }`}
+              aria-label="Next review"
+            >
+              <ChevronRight className="h-5 w-5 lg:h-6 lg:w-6 text-gray-800" />
+            </button>
+          </div>
 
-  <h3 className="mt-3 text-base font-extrabold leading-snug text-gray-900">
-    {r.title}
-  </h3>
+          {/* viewport */}
+          <div className="overflow-hidden rounded-2xl">
+            <motion.div
+              className="flex -mx-3"
+              animate={{ x: `-${translate}%` }}
+              transition={{ type: "spring", stiffness: 260, damping: 30 }}
+            >
+              {reviews.map((r, i) => (
+                <div
+                  key={i}
+                  className={`shrink-0 px-3 w-full ${
+                    perView === 3 ? "lg:w-1/3" : ""
+                  }`}
+                >
+                  <article className="h-full rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                    <StarsRow value={r.stars} />
 
-  <p className="mt-2 text-sm leading-relaxed text-gray-700">
-    {r.text}
-  </p>
-<a
-  href={REVIEW_LINK}
-  target="_blank"
-  rel="noopener noreferrer"
-  className="mt-4 inline-block text-sm font-semibold text-emerald-600 underline underline-offset-4"
->
-  Read more
-</a>
-</motion.article>
-          ))}
+                    <div className="mt-2 flex justify-between text-xs text-gray-500">
+                      <span className="font-semibold text-gray-700">
+                        {r.name}
+                      </span>
+                      <span>{r.date}</span>
+                    </div>
+
+                    <h3 className="mt-3 font-extrabold text-gray-900">
+                      {r.title}
+                    </h3>
+
+                    <p className="mt-2 text-sm text-gray-700">
+                      {r.text}
+                    </p>
+
+                    <a
+                      href={REVIEW_LINK}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-block text-sm font-semibold text-emerald-600 underline"
+                    >
+                      Read more
+                    </a>
+                  </article>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* dots */}
+          <div className="mt-6 flex justify-center gap-2">
+            {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIndex(i)}
+                className={`h-2.5 rounded-full transition ${
+                  i === index
+                    ? "w-7 bg-emerald-500"
+                    : "w-2.5 bg-gray-300"
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
