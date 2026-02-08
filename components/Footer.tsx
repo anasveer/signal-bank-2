@@ -314,7 +314,7 @@ export default function Footer() {
               text-center
               text-[13px] font-medium uppercase tracking-[0.22em]
               text-gray-200 transition hover:text-white
-              sm:h-auto sm:px-20 sm:py-4
+              sm:h-auto sm:px-18 sm:py-4
             "
           >
             {l.label}
