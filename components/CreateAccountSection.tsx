@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 
-type Country = "Austria" | "Switzerland" | "Germany";
-
 const benefits = [
   "Free access to my trading group",
   "Free access to countless trading ideas every week",
@@ -11,14 +9,28 @@ const benefits = [
   "A large community of traders from the DACH region (Germany, Austria, Switzerland).",
 ];
 
-const countries: { name: Country; code: string; flag: string }[] = [
-  { name: "Austria", code: "AT", flag: "🇦🇹" },
-  { name: "Switzerland", code: "CH", flag: "🇨🇭" },
-  { name: "Germany", code: "DE", flag: "🇩🇪" },
-];
-
 export default function CreateAccountSection() {
-  const [active, setActive] = useState<Country>("Austria");
+  // form state
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const payload = {
+      firstName,
+      lastName,
+      email,
+      phone,
+    };
+
+    console.log("REGISTER SUBMIT:", payload);
+
+    // later:
+    // await fetch("/api/register", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(payload) });
+  };
 
   return (
     <section className="w-full bg-white">
@@ -60,68 +72,122 @@ export default function CreateAccountSection() {
               </ul>
             </div>
 
-            {/* Right: create account */}
+            {/* Right: client's form (country removed only) */}
             <div className="flex flex-col justify-center">
               <h3 className="text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                 Create account
               </h3>
 
-              <p className="mt-3 text-center text-sm text-gray-600 sm:text-base">
-                Choose your country to continue.
-              </p>
+              <form onSubmit={onSubmit} className="mt-8 flex w-full justify-center">
+                <div className="w-full max-w-md space-y-4">
+                  {/* First name */}
+                  <div className="relative">
+                    <input
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                      placeholder="Enter first name..."
+                      className="h-14 w-full rounded-2xl border border-gray-200 bg-white px-5 pr-12 text-sm text-gray-900 shadow-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-emerald-200"
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-400">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                    <span className="absolute right-10 top-1/2 -translate-y-1/2 text-red-500">*</span>
+                  </div>
 
-              {/* Buttons */}
-              <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {countries.map((c) => {
-                  const isActive = active === c.name;
-                  return (
-                    <button
-                      key={c.code}
-                      type="button"
-                      onClick={() => setActive(c.name)}
-                      className={[
-                        "group relative inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold transition",
-                        "border bg-white shadow-sm",
-                        isActive
-                          ? "border-emerald-500 ring-2 ring-emerald-200"
-                          : "border-emerald-300/70 hover:border-emerald-500",
-                        "focus:outline-none focus:ring-2 focus:ring-emerald-300",
-                      ].join(" ")}
-                      aria-pressed={isActive}
-                    >
-                      <span className="text-lg" aria-hidden="true">
-                        {c.flag}
-                      </span>
-                      <span className="text-gray-900">{c.name}</span>
+                  {/* Last name */}
+                  <div className="relative">
+                    <input
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      required
+                      placeholder="Enter last name..."
+                      className="h-14 w-full rounded-2xl border border-gray-200 bg-white px-5 pr-12 text-sm text-gray-900 shadow-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-emerald-200"
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-400">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                    <span className="absolute right-10 top-1/2 -translate-y-1/2 text-red-500">*</span>
+                  </div>
 
-                      {/* subtle hover glow */}
-                      <span
-                        className={[
-                          "pointer-events-none absolute inset-0 rounded-full opacity-0 transition",
-                          isActive ? "opacity-100" : "group-hover:opacity-100",
-                        ].join(" ")}
-                        style={{
-                          boxShadow: "0 0 0 4px rgba(16,185,129,0.10)",
-                        }}
-                      />
-                    </button>
-                  );
-                })}
-              </div>
+                  {/* Email */}
+                  <div className="relative">
+                    <input
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      type="email"
+                      placeholder="Enter email address..."
+                      className="h-14 w-full rounded-2xl border border-gray-200 bg-white px-5 pr-12 text-sm text-gray-900 shadow-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-emerald-200"
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-400">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                    <span className="absolute right-10 top-1/2 -translate-y-1/2 text-red-500">*</span>
+                  </div>
 
-              {/* Optional CTA below buttons */}
-              <div className="mt-6 flex justify-center">
-                <a
-                  href="#"
-                  className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(16,185,129,0.25)] hover:brightness-110 transition"
-                >
-                  Continue
-                </a>
-              </div>
+                  {/* Phone (simple like image) */}
+                  <div className="relative">
+                    <input
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                      type="tel"
+                      placeholder="Enter phone number..."
+                      className="h-14 w-full rounded-2xl border border-gray-200 bg-white px-5 pr-12 text-sm text-gray-900 shadow-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-emerald-200"
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-400">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.07 21 3 13.93 3 5a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.58a1 1 0 0 1-.24 1.01l-2.2 2.2Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                    <span className="absolute right-10 top-1/2 -translate-y-1/2 text-red-500">*</span>
+                  </div>
 
-              <p className="mt-3 text-center text-xs text-gray-500">
-                By continuing, you agree to our terms & privacy policy.
-              </p>
+                  {/* Register button */}
+                  <button
+                    type="submit"
+                    className="mt-2 flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-sky-400 text-base font-semibold text-white shadow-[0_12px_30px_rgba(56,189,248,0.35)] transition hover:brightness-105 active:scale-[0.99]"
+                  >
+                    Register
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M10 17l5-5-5-5"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+
+                  {/* Footer note */}
+                  <p className="pt-2 text-center text-xs leading-relaxed text-gray-500">
+                    Your details will be forwarded to the webinar organizer, who might
+                    communicate with you regarding this event or their services
+                  </p>
+                </div>
+              </form>
             </div>
           </div>
         </div>
