@@ -5,110 +5,69 @@ import { Play, X } from "lucide-react";
 
 type VideoItem = {
   id: string;
-  src: string;      // mp4/webm url
-  title?: string;   // optional
+  type: "wistia";
+  mediaId: string;
+  aspect: string;
+  title?: string;
 };
 
 const videos: VideoItem[] = [
-  { id: "v1", src: "https://res.cloudinary.com/dvecd8hh8/video/upload/v1770386451/v1_f1nb7i.mp4" },
-  { id: "v2", src: "https://res.cloudinary.com/dvecd8hh8/video/upload/v1770386612/v2_eftoz9.mp4" },
-  { id: "v3", src: "https://res.cloudinary.com/dvecd8hh8/video/upload/v1770386692/v3_fwstrp.mp4" },
-  { id: "v4", src: "https://res.cloudinary.com/dvecd8hh8/video/upload/v1770386847/v4_r1xuas.mp4" },
-  { id: "v5", src: "https://res.cloudinary.com/dvecd8hh8/video/upload/v1770386966/v5_s91owc.mp4" },
-  { id: "v6", src: "https://res.cloudinary.com/dvecd8hh8/video/upload/v1770387053/v6_ncfpw2.mp4" },
-  { id: "v7", src: "https://res.cloudinary.com/dvecd8hh8/video/upload/v1770387139/v7_tbjuhx.mp4" },
-  { id: "v8", src: "https://res.cloudinary.com/dvecd8hh8/video/upload/v1770387209/v8_dwslef.mp4" },
-  { id: "v9", src: "https://res.cloudinary.com/dvecd8hh8/video/upload/v1770387322/v9_xgogx4.mp4" },
+  // ✅ 8 previously provided Wistia videos
+  { id: "w1", type: "wistia", mediaId: "s7i53j4klc", aspect: "1.7777777777777777" },
+  { id: "w2", type: "wistia", mediaId: "tcksbcif7x", aspect: "1.7777777777777777" },
+  { id: "w3", type: "wistia", mediaId: "o2h63xj3j7", aspect: "1.7777777777777777" },
+  { id: "w4", type: "wistia", mediaId: "c5hqs1fcnq", aspect: "1.7777777777777777" },
+  { id: "w5", type: "wistia", mediaId: "m2ugsq0gwh", aspect: "1.7777777777777777" },
+  { id: "w6", type: "wistia", mediaId: "mxhauwls7d", aspect: "1.7777777777777777" },
+  { id: "w7", type: "wistia", mediaId: "och156vzt8", aspect: "1.7777777777777777" },
+  { id: "w8", type: "wistia", mediaId: "hu43a5dzh4", aspect: "1.7777777777777777" },
+
+  // ✅ NEW 9th Wistia video (replaced the cloudinary one)
+  { id: "w9", type: "wistia", mediaId: "6pc4oupbrm", aspect: "1.7777777777777777" },
 ];
 
-// Generate poster from first frame (client-side)
-function useVideoPoster(src: string) {
-  const [poster, setPoster] = useState<string | null>(null);
+type ActiveState = { mediaId: string; aspect: string } | null;
 
-  useEffect(() => {
-    let cancelled = false;
+function ensureScript(src: string, type?: string) {
+  if (document.querySelector(`script[src="${src}"]`)) return;
+  const s = document.createElement("script");
+  s.src = src;
+  s.async = true;
+  if (type) s.type = type;
+  document.body.appendChild(s);
+}
 
-    async function makePoster() {
-      try {
-        const video = document.createElement("video");
-        video.crossOrigin = "anonymous"; // works if CDN allows CORS
-        video.src = src;
-        video.muted = true;
-        video.playsInline = true;
-
-        await new Promise<void>((resolve, reject) => {
-          video.addEventListener("loadeddata", () => resolve(), { once: true });
-          video.addEventListener("error", () => reject(new Error("video error")), { once: true });
-        });
-
-        // jump slightly to ensure frame is ready
-        try {
-          video.currentTime = 0.1;
-        } catch {}
-
-        await new Promise<void>((resolve) => {
-          video.addEventListener("seeked", () => resolve(), { once: true });
-          // fallback if seek doesn't fire
-          setTimeout(() => resolve(), 200);
-        });
-
-        const canvas = document.createElement("canvas");
-        canvas.width = 640;
-        canvas.height = 360;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.75);
-
-        if (!cancelled) setPoster(dataUrl);
-      } catch {
-        // fallback: no poster (we'll show gradient)
-        if (!cancelled) setPoster(null);
-      }
-    }
-
-    makePoster();
-    return () => {
-      cancelled = true;
-    };
-  }, [src]);
-
-  return poster;
+function wistiaThumbHd(mediaId: string) {
+  // ✅ HD thumbnail for landscape grid
+  return `https://fast.wistia.com/embed/medias/${mediaId}/swatch?image_crop_resized=1280x720`;
 }
 
 function VideoCard({
-  item,
+  mediaId,
   onClick,
 }: {
-  item: VideoItem;
-  onClick: (src: string) => void;
+  mediaId: string;
+  onClick: () => void;
 }) {
-  const poster = useVideoPoster(item.src);
-
   return (
     <button
       type="button"
-      onClick={() => onClick(item.src)}
+      onClick={onClick}
       className="group relative w-full overflow-hidden rounded-2xl bg-black shadow-[0_12px_30px_rgba(0,0,0,0.12)] ring-1 ring-black/10"
     >
       <div className="relative aspect-video w-full">
-        {/* Poster / fallback */}
-        {poster ? (
-          <img
-            src={poster}
-            alt={item.title ?? "Interview video"}
-            className="h-full w-full object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <div className="h-full w-full bg-gradient-to-br from-gray-200 to-gray-100" />
-        )}
+        {/* ✅ HD Poster */}
+        <img
+          src={wistiaThumbHd(mediaId)}
+          alt="Interview video"
+          className="h-full w-full object-cover"
+          loading="lazy"
+        />
 
-        {/* Dark top strip like screenshot */}
+        {/* Dark top strip */}
         <div className="absolute inset-x-0 top-0 h-12 bg-black/80" />
 
-        {/* Play Button */}
+        {/* Play overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 shadow-[0_15px_35px_rgba(16,185,129,0.35)] transition group-hover:scale-105">
             <Play className="h-8 w-8 text-white" fill="white" />
@@ -120,9 +79,36 @@ function VideoCard({
 }
 
 export default function MemberInterviewsSection() {
-  const [activeSrc, setActiveSrc] = useState<string | null>(null);
-
+  const [active, setActive] = useState<ActiveState>(null);
   const title = useMemo(() => "Interviews with Members", []);
+
+  // Load Wistia core player once
+  useEffect(() => {
+    ensureScript("https://fast.wistia.com/player.js");
+  }, []);
+
+  // When opening a Wistia video, load its embed module
+  useEffect(() => {
+    if (!active) return;
+    ensureScript(`https://fast.wistia.com/embed/${active.mediaId}.js`, "module");
+  }, [active]);
+
+  const renderWistiaEmbed = (mediaId: string, aspect: string) => `
+    <style>
+      wistia-player[media-id='${mediaId}']:not(:defined) {
+        background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/${mediaId}/swatch?image_crop_resized=1280x720');
+        display: block;
+        filter: blur(5px);
+        padding-top: 56.25%;
+      }
+      wistia-player[media-id='${mediaId}']{
+        width:100%;
+        height:100%;
+        display:block;
+      }
+    </style>
+    <wistia-player media-id="${mediaId}" aspect="${aspect}"></wistia-player>
+  `;
 
   return (
     <section className="w-full bg-white py-12">
@@ -135,21 +121,25 @@ export default function MemberInterviewsSection() {
           <div className="mx-auto mt-3 h-[2px] w-40 bg-emerald-500" />
         </div>
 
-        {/* Grid (Responsive) */}
+        {/* Grid */}
         <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {videos.map((v) => (
-            <VideoCard key={v.id} item={v} onClick={setActiveSrc} />
+            <VideoCard
+              key={v.id}
+              mediaId={v.mediaId}
+              onClick={() => setActive({ mediaId: v.mediaId, aspect: v.aspect })}
+            />
           ))}
         </div>
       </div>
 
-      {/* Modal Player (Lazy load actual video) */}
-      {activeSrc && (
+      {/* Modal */}
+      {active && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4"
           role="dialog"
           aria-modal="true"
-          onClick={() => setActiveSrc(null)}
+          onClick={() => setActive(null)}
         >
           <div
             className="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-black"
@@ -157,19 +147,18 @@ export default function MemberInterviewsSection() {
           >
             <button
               type="button"
-              onClick={() => setActiveSrc(null)}
+              onClick={() => setActive(null)}
               className="absolute right-3 top-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20"
               aria-label="Close"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <video
-              src={activeSrc}
-              controls
-              autoPlay
-              playsInline
+            <div
               className="block h-auto w-full"
+              dangerouslySetInnerHTML={{
+                __html: renderWistiaEmbed(active.mediaId, active.aspect),
+              }}
             />
           </div>
         </div>
