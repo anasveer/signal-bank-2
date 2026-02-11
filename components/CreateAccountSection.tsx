@@ -16,8 +16,13 @@ export default function CreateAccountSection() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
+  // ui state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<null | { type: "success" | "error"; msg: string }>(null);
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setStatus(null);
 
     const payload = {
       firstName,
@@ -26,10 +31,34 @@ export default function CreateAccountSection() {
       phone,
     };
 
-    console.log("REGISTER SUBMIT:", payload);
+    try {
+      setIsSubmitting(true);
 
-    // later:
-    // await fetch("/api/register", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(payload) });
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setStatus({ type: "error", msg: data?.message || "Something went wrong." });
+        return;
+      }
+
+      setStatus({ type: "success", msg: "Registered successfully!" });
+
+      // optional: clear fields
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPhone("");
+    } catch (err) {
+      setStatus({ type: "error", msg: "Network error. Please try again." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -72,7 +101,7 @@ export default function CreateAccountSection() {
               </ul>
             </div>
 
-            {/* Right: client's form (country removed only) */}
+            {/* Right: form */}
             <div className="flex flex-col justify-center">
               <h3 className="text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                 Create account
@@ -141,7 +170,7 @@ export default function CreateAccountSection() {
                     <span className="absolute right-10 top-1/2 -translate-y-1/2 text-red-500">*</span>
                   </div>
 
-                  {/* Phone (simple like image) */}
+                  {/* Phone */}
                   <div className="relative">
                     <input
                       value={phone}
@@ -162,12 +191,27 @@ export default function CreateAccountSection() {
                     <span className="absolute right-10 top-1/2 -translate-y-1/2 text-red-500">*</span>
                   </div>
 
+                  {/* Status message */}
+                  {status && (
+                    <div
+                      className={[
+                        "rounded-2xl border px-4 py-3 text-sm",
+                        status.type === "success"
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                          : "border-red-200 bg-red-50 text-red-800",
+                      ].join(" ")}
+                    >
+                      {status.msg}
+                    </div>
+                  )}
+
                   {/* Register button */}
                   <button
                     type="submit"
-                    className="mt-2 flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-sky-400 text-base font-semibold text-white shadow-[0_12px_30px_rgba(56,189,248,0.35)] transition hover:brightness-105 active:scale-[0.99]"
+                    disabled={isSubmitting}
+                    className="mt-2 flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-sky-400 text-base font-semibold text-white shadow-[0_12px_30px_rgba(56,189,248,0.35)] transition hover:brightness-105 active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    Register
+                    {isSubmitting ? "Registering..." : "Register"}
                     <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path
